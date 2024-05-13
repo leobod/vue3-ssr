@@ -1,59 +1,49 @@
 import { createApp } from './main'
 import { renderToString } from '@vue/server-renderer'
 import { createRouter } from './router'
+import createStore from './store';
 
 
-export const render = async (ctx, manifest) => {
-    const { app } = createApp()
+export default function (ctx) {
+    return new Promise(async (resolve, reject) => {
+        const { app } = createApp()
 
-    // 路由注册
-    const router = createRouter('server')
-    app.use(router)
-    await router.push(ctx.url)
-    await router.isReady()
+        // 路由注册
+        const router = createRouter('server')
+        app.use(router)
+        const store = createStore();
+        app.use(store);
 
-    const renderCtx = {}
-    const renderedHtml = await renderToString(app, renderCtx);
-    const preloadLinks = renderPreloadLinks(renderCtx.modules, manifest);
-    return [renderedHtml, preloadLinks];
-}
+        await router.push(ctx.url)
+        await router.isReady()
 
-/**
- * 解析需要预加载的链接
- * @param modules
- * @param manifest
- * @returns string
- */
-function renderPreloadLinks(modules, manifest) {
-    let links = '';
-    const seen = new Set();
-    if (modules === undefined) throw new Error();
-    modules.forEach((id) => {
-        const files = manifest[id];
-        if (files) {
-            files.forEach((file) => {
-                if (!seen.has(file)) {
-                    seen.add(file);
-                    links += renderPreloadLink(file);
-                }
-            });
+        // 匹配路由是否存在
+        const matchedComponents = router.currentRoute.value.matched.flatMap(record => Object.values(record.components))
+        // 不存在路由
+        console.log(ctx.url)
+        if (!matchedComponents.length) {
+            return reject({ code: 404, url: ctx.url });
         }
-    });
-    return links;
+        // 处理store
+        Promise.all(matchedComponents.map(component => {
+            if (component.asyncData) {
+                return component.asyncData(store)
+            }
+        })).then(async (res) => {
+            let html = await renderToString(app);
+            html += `<script>window.__INITIAL_STATE__ = ${replaceHtmlTag(JSON.stringify(store.state))}</script>`
+            resolve(html);
+        }).catch(() => {
+            reject('')
+        })
+    })
 }
 
 /**
- * 预加载的对应的地址
- * 下面的方法只针对了 js 和 css，如果需要处理其它文件，自行添加即可
- * @param file
- * @returns string
+ * 替换标签
+ * @param {*} html
+ * @returns
  */
-function renderPreloadLink(file) {
-    if (file.endsWith('.js')) {
-        return `<link rel="modulepreload" crossorigin href="${file}">`;
-    } else if (file.endsWith('.css')) {
-        return `<link rel="stylesheet" href="${file}">`;
-    } else {
-        return '';
-    }
+function replaceHtmlTag(html) {
+    return html.replace(/<script(.*?)>/gi, '&lt;script$1&gt;').replace(/<\/script>/g, '&lt;/script&gt;')
 }

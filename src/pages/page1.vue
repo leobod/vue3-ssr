@@ -1,5 +1,21 @@
+<script>
+// 声明额外的选项
+export default {
+  // 对外暴露方法,执行store
+  asyncData: (store) => {
+    return store.dispatch('asyncSetMsg');
+  },
+}
+</script>
 <script setup>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
+import { useStore } from 'vuex';
+
+const store = useStore();
+// 获取异步数据
+store.dispatch('asyncSetMsg');
+// 得到后赋值
+const storeMsg = computed(() => store.state.msg);
 
 const listModel = reactive({
   list: [
@@ -19,10 +35,7 @@ const listModel = reactive({
       {{ item.label }}
     </li>
   </ul>
+  <div>store: {{ storeMsg }}</div>
 </template>
 
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-</style>
+<style scoped> </style>

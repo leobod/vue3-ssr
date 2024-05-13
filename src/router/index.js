@@ -37,6 +37,16 @@ export const createRouter = (type) =>
                     requireAuth: true
                 },
                 component: () => import('../pages/page3.vue')
-            }
+            },
+            {
+                path: '/',
+                name: 'index',
+                meta: {
+                    title: 'index',
+                    keepAlive: true,
+                    requireAuth: true
+                },
+                component: () => import('../pages/index.vue')
+            },
         ]
     });
