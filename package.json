@@ -3,12 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev:server": "nodemon ./server.js",
-    "dev:client": "webpack serve  --config ./webpack/client.dev.config.js",
-    "build:client": "webpack --config ./webpack/client.pro.config.js",
-    "build:server": "webpack --config ./webpack/server.config.js",
+    "dev:client": "webpack --watch --config webpack/dev.client.config.js",
+    "dev:server": "webpack --watch --config webpack/dev.server.config.js",
+    "dev:run": "nodemon ./server.js",
+    "build:client": "webpack --config webpack/prod.client.config.js",
+    "build:server": "webpack --config webpack/prod.server.config.js",
     "build": "npm run build:client && npm run build:server",
-    "dev": "npm run build && npm run dev:server"
+    "prod:run": "npm run build && npm run dev:server"
   },
   "dependencies": {
     "@vue/server-renderer": "^3.4.27",

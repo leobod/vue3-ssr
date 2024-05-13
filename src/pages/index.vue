@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 const count = ref(0)
-const msg = ref('Hello Vue3')
+const msg = ref('Hello Vue3 + Webpack Watch')
 </script>
 
 <template>
