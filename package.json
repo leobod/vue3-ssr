@@ -1,0 +1,27 @@
+{
+  "name": "vue3-ssr",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev:ssr": "node server.dev.js",
+    "server": "node server.prod.js",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "vite build --ssrManifest --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.js --outDir dist/server"
+  },
+  "dependencies": {
+    "@vue/server-renderer": "^3.4.27",
+    "koa": "^2.15.3",
+    "koa-connect": "^2.1.0",
+    "koa-mount": "^4.0.0",
+    "koa-send": "^5.0.1",
+    "koa-static": "^5.0.0",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.2.0"
+  }
+}
