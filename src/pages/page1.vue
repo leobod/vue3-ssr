@@ -9,22 +9,19 @@ export default {
 </script>
 <script setup>
 import { reactive, computed } from 'vue'
+const listModel = reactive({ list: [] })
+
+
 import { useStore } from 'vuex';
-
 const store = useStore();
-// 获取异步数据
-store.dispatch('asyncSetMsg');
-// 得到后赋值
-const storeMsg = computed(() => store.state.msg);
 
-const listModel = reactive({
-  list: [
-    { label: '标签1', value: 1 },
-    { label: '标签2', value: 2 },
-    { label: '标签3', value: 3 },
-    { label: '标签4', value: 4 }
-  ]
-})
+if (store.state.msg && store.state.msg.length > 0) {
+  listModel.list = store.state.msg
+} else {
+  store.dispatch('asyncSetMsg').then(() => {
+    listModel.list = store.state.msg
+  })
+}
 
 </script>
 
@@ -32,7 +29,7 @@ const listModel = reactive({
   <h1>Page1</h1>
   <ul>
     <li v-for="(item, idx) of listModel.list">
-      {{ item.label }}
+      {{ item.title }}
     </li>
   </ul>
   <div>store: {{ storeMsg }}</div>

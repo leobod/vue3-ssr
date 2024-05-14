@@ -16,6 +16,14 @@ const msg = ref('Hello Vue3 + Webpack Watch')
     page1
   </a>
 
+  <button @click="$router.push('/page2')">
+    page2
+  </button>
+
+  <a href="/page2">
+    page2
+  </a>
+
   <h1>{{ msg }}</h1>
 
   <div class="card">

@@ -7,9 +7,24 @@ const createApp = require(appPath).default;
 const fs = require('fs');
 const Mount = require('koa-mount');
 const Static = require('koa-static')
+const KoaBodyparser = require('koa-bodyparser');
+const KoaRouter = require('koa-router');
 
 const app = new Koa()
+app.use(KoaBodyparser());
+let router = new KoaRouter();
+
 app.use(Mount('/',Static('./dist')))
+
+router.get('/api/news', async (ctx)=>{
+    ctx.body = [
+        { code: 1, title: '新闻标题1' },
+        { code: 2, title: '新闻标题2' },
+        { code: 3, title: '新闻标题3' },
+        { code: 4, title: '新闻标题4' },
+    ]
+})
+app.use(router.routes());
 
 // 获取模板
 const indexTemplate = fs.readFileSync(
