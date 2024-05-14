@@ -14,6 +14,8 @@ export default function (ctx) {
         const store = createStore();
         app.use(store);
 
+        console.log('cookie:user_name = ', ctx.cookies.get('user_name'));
+
         await router.push(ctx.url)
         await router.isReady()
 

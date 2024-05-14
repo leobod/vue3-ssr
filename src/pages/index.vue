@@ -1,11 +1,21 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const $router = useRouter()
 
 const count = ref(0)
 const msg = ref('Hello Vue3 + Webpack Watch')
 </script>
 
 <template>
+  <button @click="$router.push('/page1')">
+    page1
+  </button>
+
+  <a href="/page1">
+    page1
+  </a>
+
   <h1>{{ msg }}</h1>
 
   <div class="card">
