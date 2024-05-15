@@ -2,10 +2,11 @@ import { createApp } from "./main";
 import { renderToString } from "@vue/server-renderer";
 import { createRouter } from "./router";
 import createStore from "./store";
+import { _asyncData } from "./utils/useAsyncData";
 
 export default function (ctx) {
   return new Promise(async (resolve, reject) => {
-    const _data = {};
+    _asyncData.value = {};
     const { app } = createApp();
 
     // 路由注册
@@ -24,27 +25,21 @@ export default function (ctx) {
       (record) => Object.values(record.components)
     );
     // 不存在路由
-    console.log(ctx.url);
     if (!matchedComponents.length) {
       return reject({ code: 404, url: ctx.url });
     }
-    matchedComponents.map(async (component) => {
-      if (component.fetchData) {
-        await component.fetchData(_data);
-      }
-    });
     // 处理store
     Promise.all(
       matchedComponents.map(async (component) => {
         if (component.asyncData) {
-          await component.asyncData(_data);
+          await component.asyncData(_asyncData.value);
         }
       })
     )
       .then(async () => {
         let html = await renderToString(app);
-        html += `<script>window._data = ${replaceHtmlTag(
-          JSON.stringify(_data)
+        html += `<script>window._asyncData = ${replaceHtmlTag(
+          JSON.stringify(_asyncData.value)
         )}</script>`;
         resolve(html);
       })

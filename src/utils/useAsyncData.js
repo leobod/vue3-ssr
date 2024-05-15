@@ -1,5 +1,9 @@
 import { request } from "./request";
 
+export const _asyncData = {
+  value: {},
+};
+
 // 判断是否在服务器端运行
 export const isServer = function () {
   return typeof window === "undefined";
@@ -69,32 +73,33 @@ export const clientAsyncData = function (config) {
 
 export const getAsyncData = function () {
   let asyncData = {};
-  if (!isServer() && window._data) {
-    try {
-      asyncData = JSON.parse(window._data);
-    } catch (e) {
-      asyncData = {};
-    }
+  if (!isServer() && window._asyncData) {
+    asyncData = window._asyncData;
+  } else {
+    asyncData = _asyncData.value;
   }
   return asyncData;
 };
 
 export const useAsyncData = function (config, key = "") {
-  return new Promise((resolve) => {
-    const asyncData = getAsyncData();
-    const asyncKey = getAsyncKey(config, key);
-    let result = {
-      pending: "pending", // fulfilled rejected pending
-      data: null,
+  const asyncData = getAsyncData();
+  const asyncKey = getAsyncKey(config, key);
+  let result = {
+    pending: "pending", // fulfilled rejected pending
+    data: null,
+  };
+  console.log(asyncData);
+  if (asyncData[asyncKey] && asyncData[asyncKey].pending === "fulfilled") {
+    result = asyncData[asyncKey];
+    return {
+      then: function (fn) {
+        let val = result;
+        if (fn instanceof Function) {
+          fn(val);
+        }
+      },
     };
-    console.log(asyncData);
-    if (asyncData[asyncKey] && asyncData[asyncKey].pending === "fulfilled") {
-      result = asyncData[asyncKey];
-      resolve(result);
-    } else {
-      clientAsyncData(config)
-        .then((res) => (result = res))
-        .finally(() => resolve(result));
-    }
-  });
+  } else {
+    return clientAsyncData(config);
+  }
 };

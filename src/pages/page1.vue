@@ -12,7 +12,8 @@ import { reactive } from "vue";
 import { useAsyncData } from "../utils/useAsyncData";
 
 const listModel = reactive({ list: [] });
-await useAsyncData({ url: "/api/news", method: "get" }, "news").then((res) => {
+
+useAsyncData({ url: "/api/news", method: "get" }, "news").then((res) => {
   listModel.list = res.data;
 });
 </script>
