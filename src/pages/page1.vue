@@ -1,28 +1,20 @@
 <script>
+import { serverAsyncData } from "../utils/useAsyncData";
 // 声明额外的选项
 export default {
-  // 对外暴露方法,执行store
-  asyncData: (store) => {
-    return store.dispatch('asyncSetMsg');
+  asyncData: async (_data) => {
+    await serverAsyncData({ url: "/api/news", method: "get" }, _data, "news");
   },
-}
+};
 </script>
 <script setup>
-import { reactive, computed } from 'vue'
-const listModel = reactive({ list: [] })
+import { reactive } from "vue";
+import { useAsyncData } from "../utils/useAsyncData";
 
-
-import { useStore } from 'vuex';
-const store = useStore();
-
-if (store.state.msg && store.state.msg.length > 0) {
-  listModel.list = store.state.msg
-} else {
-  store.dispatch('asyncSetMsg').then(() => {
-    listModel.list = store.state.msg
-  })
-}
-
+const listModel = reactive({ list: [] });
+await useAsyncData({ url: "/api/news", method: "get" }, "news").then((res) => {
+  listModel.list = res.data;
+});
 </script>
 
 <template>
@@ -32,7 +24,7 @@ if (store.state.msg && store.state.msg.length > 0) {
       {{ item.title }}
     </li>
   </ul>
-  <div>store: {{ storeMsg }}</div>
 </template>
 
-<style scoped> </style>
+<style scoped></style>
+../utils/useAsyncData../utils/useAsyncData
