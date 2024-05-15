@@ -9,7 +9,7 @@
     "build:client": "webpack --config webpack/prod.client.config.js",
     "build:server": "webpack --config webpack/prod.server.config.js",
     "build": "npm run build:client && npm run build:server",
-    "prod:run": "npm run build && npm run dev:server"
+    "prod:run": "npm run build && node ./server.js"
   },
   "dependencies": {
     "@vue/server-renderer": "^3.4.27",
