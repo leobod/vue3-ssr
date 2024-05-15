@@ -2,14 +2,15 @@
 import { serverAsyncData } from "../utils/useAsyncData";
 // 声明额外的选项
 export default {
-  asyncData: async (_data) => {
-    await serverAsyncData({ url: "/api/news", method: "get" }, _data, "news");
+  asyncData: async (_asyncData) => {
+    await serverAsyncData({ url: "/api/news", method: "get" }, _asyncData, "news");
   },
 };
 </script>
 <script setup>
 import { reactive } from "vue";
 import { useAsyncData } from "../utils/useAsyncData";
+
 
 const listModel = reactive({ list: [] });
 

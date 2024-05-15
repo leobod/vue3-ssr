@@ -6,27 +6,17 @@ export default function createStore() {
     return _createStore({
         state: {
             // 状态数据
-            msg: []
+            items: {}
         },
         mutations: {
-            // 同步数据
-            SET_MSG(state, mgs=[]){
-                state.msg = mgs;
-            }
+            SET_ITEM (state, { key, value }) {
+                state.items[key] = value
+            },
         },
         actions: {
-            setMsg({commit}, val) {
-                commit('SET_MSG', val);
-            },
-            // 异步数据
-            asyncSetMsg({commit}){
-                return new Promise((resolve) => {
-                    request.get('/api/news').then(res => {
-                        commit('SET_MSG', res);
-                        resolve();
-                    })
-                })
-            },
+            setItem: function ({ commit }, val) {
+                commit('SET_ITEM', { key: val.key, value: val.value })
+            }
         },
         modules: {}
     });

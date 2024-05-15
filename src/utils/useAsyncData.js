@@ -1,8 +1,5 @@
 import { request } from "./request";
-
-export const _asyncData = {
-  value: {},
-};
+import { useSSRContext } from 'vue'
 
 // 判断是否在服务器端运行
 export const isServer = function () {
@@ -23,7 +20,7 @@ export const getAsyncKey = function (config, key = "") {
   return asyncKey;
 };
 
-export const serverAsyncData = function (config, _data = {}, key = "") {
+export const serverAsyncData = function (config, _asyncData={}, key = "") {
   return new Promise((resolve) => {
     const result = {
       pending: "pending", // fulfilled rejected pending
@@ -41,7 +38,7 @@ export const serverAsyncData = function (config, _data = {}, key = "") {
           result.data = null;
         })
         .finally(() => {
-          _data[asyncKey] = result;
+          _asyncData[asyncKey] = result
           resolve(result);
         });
     } else {
@@ -76,7 +73,8 @@ export const getAsyncData = function () {
   if (!isServer() && window._asyncData) {
     asyncData = window._asyncData;
   } else {
-    asyncData = _asyncData.value;
+    const ssrContext = useSSRContext()
+    asyncData = ssrContext._asyncData
   }
   return asyncData;
 };
@@ -88,7 +86,6 @@ export const useAsyncData = function (config, key = "") {
     pending: "pending", // fulfilled rejected pending
     data: null,
   };
-  console.log(asyncData);
   if (asyncData[asyncKey] && asyncData[asyncKey].pending === "fulfilled") {
     result = asyncData[asyncKey];
     return {

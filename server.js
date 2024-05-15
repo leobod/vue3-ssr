@@ -41,7 +41,7 @@ app.use(async (ctx) => {
       .replace('<div id="app">', `<div id="app">${appContent}`);
     ctx.body = html;
   } catch (e) {
-    console.log(e);
+    console.log('e', e.message);
     if (e.code == 404) {
       ctx.body = "页面去火星了，找不到了，404啦";
     } else {

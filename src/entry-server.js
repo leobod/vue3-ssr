@@ -2,24 +2,21 @@ import { createApp } from "./main";
 import { renderToString } from "@vue/server-renderer";
 import { createRouter } from "./router";
 import createStore from "./store";
+import { useSSRContext } from 'vue'
 import { _asyncData } from "./utils/useAsyncData";
 
 export default function (ctx) {
   return new Promise(async (resolve, reject) => {
-    _asyncData.value = {};
     const { app } = createApp();
-
+    const _asyncData = {}
     // 路由注册
     const router = createRouter("server");
     app.use(router);
     const store = createStore();
     app.use(store);
-
-    console.log("cookie:user_name = ", ctx.cookies.get("user_name"));
-
+    // console.log("cookie:user_name = ", ctx.cookies.get("user_name"));
     await router.push(ctx.url);
     await router.isReady();
-
     // 匹配路由是否存在
     const matchedComponents = router.currentRoute.value.matched.flatMap(
       (record) => Object.values(record.components)
@@ -32,19 +29,23 @@ export default function (ctx) {
     Promise.all(
       matchedComponents.map(async (component) => {
         if (component.asyncData) {
-          await component.asyncData(_asyncData.value);
+          await component.asyncData(_asyncData);
         }
       })
     )
       .then(async () => {
-        let html = await renderToString(app);
+          const ssrContext = {
+              _asyncData: _asyncData
+          }
+        let html = await renderToString(app, ssrContext);
         html += `<script>window._asyncData = ${replaceHtmlTag(
-          JSON.stringify(_asyncData.value)
+          JSON.stringify(_asyncData)
         )}</script>`;
         resolve(html);
       })
-      .catch(() => {
-        reject("");
+      .catch((e) => {
+          console.log('e2', e)
+        reject(e);
       });
   });
 }
