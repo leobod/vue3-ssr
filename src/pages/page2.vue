@@ -1,41 +1,23 @@
-<script>
-import { request } from '../utils/request'
-// 声明额外的选项
-export default {
-  // 对外暴露方法,执行store
-  asyncData:  async (store) => {
-    const result = await request({url: '/api/news', method: 'get'});
-  },
-}
-</script>
 <script setup>
-import {onServerPrefetch, reactive, ref} from 'vue'
-import { request } from '../utils/request'
-import { useStore } from 'vuex';
-const store = useStore();
+import { ref } from "vue";
+const content = `
+<div class="theme-default-content content__default"><h2 id="git的介绍"><a href="#git的介绍" class="header-anchor">#</a> Git的介绍</h2> <p></p><div class="table-of-contents"><ul><li><a href="#git的介绍">Git的介绍</a><ul><li><a href="#什么是git">什么是Git</a></li><li><a href="#git的安装">Git的安装</a></li><li><a href="#查看是否有git或者安装是否成功">查看是否有git或者安装是否成功</a></li></ul></li><li><a href="#参考说明">参考说明</a></li></ul></div><p></p> <h3 id="什么是git"><a href="#什么是git" class="header-anchor">#</a> 什么是Git</h3> <p>Git 是一个开源的分布式版本控制系统。</p> <ul><li><p>分布式 ：</p> <ul><li>你的文件可以存放在多个不同的系统(或者位置)，相互之间来自于一个 原本，单个副本修改，不影响其他副本。</li> <li>但是可以通过从一个指定地方（比如Github,或者自己构建的gitlab）上传与拉取来获得更新。</li></ul></li> <li><p>版本控制系统： 顾名思义</p> <ul><li>相比于 集中式版本控制系统，他更小巧，更快捷，更方便。</li> <li>不依赖中央服务器，本质上继承了他的创造者的 一切皆文件的想法。</li> <li>其实他就是你随处可以带走的文件，只不过加了一套逻辑，可以配合Git来控制，从而进行版本控制。</li></ul></li></ul> <h3 id="git的安装"><a href="#git的安装" class="header-anchor">#</a> Git的安装</h3> <h4 id="linux下安装"><a href="#linux下安装" class="header-anchor">#</a> Linux下安装</h4> <div class="language-shell extra-class"><pre class="language-shell"><code>Linux 下使用如下命令安装
+<span class="token function">sudo</span> yum <span class="token function">install</span> <span class="token function">git</span>					//适用于 RedHat 系的 Linux
+或者
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">git</span>				//适用于 Ubuntu 系的 Linux
+或者
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> git-core			//适用于 老版本 Ubuntu 系的 Linux
+</code></pre></div><p>一般情况下当下的Linux都自带了 git</p> <p>对于更多Linux的安装方法参考  <a href="http://git-scm.com/download/linux" target="_blank" rel="noopener noreferrer">http://git-scm.com/download/linux<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h4 id="mac下安装"><a href="#mac下安装" class="header-anchor">#</a> Mac下安装</h4> <ul><li>使用homebrew安装</li></ul> <div class="language- extra-class"><pre class="language-text"><code>brew install git
+</code></pre></div><ul><li>二进制安装程序。</li></ul> <p>官方维护的 OSX Git 安装程序可以在 Git 官方网站下载，网址为 <a href="http://git-scm.com/download/mac" target="_blank" rel="noopener noreferrer">http://git-scm.com/download/mac<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p> <h4 id="windows下安装"><a href="#windows下安装" class="header-anchor">#</a> Windows下安装</h4> <p>请直接前往 <a href="https://git-scm.com/" target="_blank" rel="noopener noreferrer">git官网<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> 下载，辅之以图形界面工具(可以考虑fork)，另外终端操作以后值得学习。</p> <p>在win10 1709版本以上的，可以辅之使用 windows subsystem的Linux来配合使用</p> <h3 id="查看是否有git或者安装是否成功"><a href="#查看是否有git或者安装是否成功" class="header-anchor">#</a> 查看是否有git或者安装是否成功</h3> <h4 id="查看git版本"><a href="#查看git版本" class="header-anchor">#</a> 查看git版本</h4> <div class="language- extra-class"><pre class="language-text"><code>git --version
+</code></pre></div><h2 id="参考说明"><a href="#参考说明" class="header-anchor">#</a> 参考说明</h2> <blockquote><p>本文部分内容参考：<a href="https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git" target="_blank" rel="noopener noreferrer">Git官方指南--1.5 起步 - 安装 Git<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></blockquote></div>
+`;
 
-const listModel = ref([])
-
-onServerPrefetch(async () => {
-  const result = await request({url: '/api/news', method: 'get'});
-  store.dispatch('setMsg', result)
-})
-
-console.log(store.state.msg);
-
-listModel.value = store.state.msg;
-
-
+const htmlContent = ref(content);
 </script>
 
 <template>
-  <h1>Page1</h1>
-  <ul>
-    <li v-for="(item, idx) of listModel">
-      {{ item.title }}
-    </li>
-  </ul>
-  <div>store: {{ storeMsg }}</div>
+  <h1>Page2</h1>
+  <div v-html="htmlContent"></div>
 </template>
 
-<style scoped> </style>
+<style scoped></style>
