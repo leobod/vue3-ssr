@@ -2,13 +2,12 @@ import { createApp } from "./main";
 import { renderToString } from "@vue/server-renderer";
 import { createRouter } from "./router";
 import createStore from "./store";
-import { useSSRContext } from 'vue'
 import { _asyncData } from "./utils/useAsyncData";
 
 export default function (ctx) {
   return new Promise(async (resolve, reject) => {
     const { app } = createApp();
-    const _asyncData = {}
+    const _asyncData = {};
     // 路由注册
     const router = createRouter("server");
     app.use(router);
@@ -34,17 +33,19 @@ export default function (ctx) {
       })
     )
       .then(async () => {
-          const ssrContext = {
-              _asyncData: _asyncData
-          }
+        const ssrContext = {
+          _asyncData: _asyncData,
+        };
         let html = await renderToString(app, ssrContext);
+
+        const teleports = renderTeleports(ssrContext.teleports);
         html += `<script>window._asyncData = ${replaceHtmlTag(
           JSON.stringify(_asyncData)
         )}</script>`;
-        resolve(html);
+        resolve({ html, teleports });
       })
       .catch((e) => {
-          console.log('e2', e)
+        console.log("e2", e);
         reject(e);
       });
   });
@@ -59,4 +60,14 @@ function replaceHtmlTag(html) {
   return html
     .replace(/<script(.*?)>/gi, "&lt;script$1&gt;")
     .replace(/<\/script>/g, "&lt;/script&gt;");
+}
+
+function renderTeleports(teleports) {
+  if (!teleports) return "";
+  return Object.entries(teleports).reduce((all, [key, value]) => {
+    if (key.startsWith("#el-popper-container-")) {
+      return `${all}<div id="${key.slice(1)}">${value}</div>`;
+    }
+    return all;
+  }, teleports.body || "");
 }

@@ -1,5 +1,4 @@
 const Koa = require("koa");
-const { renderToString } = require("@vue/server-renderer");
 const path = require("path");
 const manifest = require("./dist/ssr-manifest.json");
 const appPath = path.join(__dirname, "./dist", manifest["server.js"]);
@@ -38,10 +37,11 @@ app.use(async (ctx) => {
     const appContent = await createApp(ctx);
     const html = indexTemplate
       .toString()
-      .replace('<div id="app">', `<div id="app">${appContent}`);
+      .replace("<!--app-html-->", appContent.html)
+      .replace(/(\n|\r\n)\s*<!--app-teleports-->/, appContent.teleports);
     ctx.body = html;
   } catch (e) {
-    console.log('e', e.message);
+    console.log("e", e.message);
     if (e.code == 404) {
       ctx.body = "页面去火星了，找不到了，404啦";
     } else {

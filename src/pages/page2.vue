@@ -17,6 +17,16 @@ const htmlContent = ref(content);
 
 <template>
   <h1>Page2</h1>
+
+  <el-tooltip
+    class="box-item"
+    effect="dark"
+    content="Top Left prompts info"
+    placement="top-start"
+  >
+    <el-button>top-start</el-button>
+  </el-tooltip>
+
   <div v-html="htmlContent"></div>
 </template>
 
